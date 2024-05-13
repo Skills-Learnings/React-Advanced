@@ -1,6 +1,8 @@
 import { useRef, useState } from "react"
 import { createPortal } from "react-dom"
 import { CustomInput } from "./CustomInput"
+import Child from "./Child"
+import Counter from "./Counter"
 
 // Portal example
 /* function App() {
@@ -43,7 +45,7 @@ function AlertMessage({ children, onClose, isOpen }) {
 } */
 
 //forwardRef() example
-function App() {
+/* function App() {
   const inputRef = useRef()
 
   function handleSubmit(e) {
@@ -57,6 +59,36 @@ function App() {
       <CustomInput ref={inputRef} />
       <button type="submit">Submit</button>
     </form>
+  )
+} */
+
+// Example of implementing error boundary refer main.jsx and ErrorBoundary.jsx
+/* function App() {
+  return (
+    <>
+      <h1>Parent</h1>
+      <Child />
+    </>
+  )
+} */
+
+function App() {
+  const [changeDogs, setChangeDogs] = useState(false)
+
+  return (
+    <div>
+      {changeDogs ? (
+        <>
+          <span># of Dogs: </span> <Counter key="dog" />
+        </>
+      ) : (
+        <>
+          <span># of Cats: </span> <Counter key="cat" />
+        </>
+      )}
+      <br />
+      <button onClick={() => setChangeDogs((d) => !d)}>Switch</button>
+    </div>
   )
 }
 
