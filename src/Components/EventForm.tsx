@@ -1,7 +1,10 @@
-import { useEffect, useId, useRef, useState } from "react"
-import { Event } from "../Context/Events"
+import { Fragment, useEffect, useId, useRef, useState } from "react"
+import { Event } from "../context/Events"
 import Modal from "./Modal"
 import { format } from "date-fns"
+import { UnionOmit } from "../utils/types"
+import { formatDate } from "../utils/formatDate"
+import { EVENT_COLORS } from "../context/useEvents"
 
 type EventFormType = {
   day: Date
@@ -27,7 +30,7 @@ export default function EventForm({
   const [isAllDay, setIsAllDay] = useState(event?.allDay || false)
   const [startTime, setStartTime] = useState(event?.startTime || "")
   const endTimeRef = useRef<HTMLInputElement>(null)
-  const [selectedColor, setSelectedColor] = useState(event?.color || "red")
+  const [selectedColor, setSelectedColor] = useState(event?.color || EVENT_COLORS[0])
 
   useEffect(() => {}, [isAllDay])
 
@@ -45,7 +48,7 @@ export default function EventForm({
       color: selectedColor,
     }
 
-    let newEvent: Event
+    let newEvent: UnionOmit<Event, "id">
 
     if (isAllDay) {
       newEvent = {
@@ -77,7 +80,7 @@ export default function EventForm({
     <Modal {...modalProps}>
       <div className="modal-title">
         <div>{isNew ? "Add" : "Edit"} Event</div>
-        <small>{format(day, "dd/M/yy")}</small>
+        <small>{formatDate(day || event?.date, { dateStyle: "short" })}</small>
         <button onClick={modalProps.onClose} className="close-btn">
           &times;
         </button>
@@ -134,42 +137,22 @@ export default function EventForm({
         <div className="form-group">
           <label>Color</label>
           <div className="row left">
-            <input
-              type="radio"
-              name="color"
-              value="blue"
-              id={`${formId}-blue`}
-              className="color-radio"
-              checked={selectedColor === "blue"}
-              onChange={() => setSelectedColor("blue")}
-            />
-            <label htmlFor={`${formId}-blue`}>
-              <span className="sr-only">Blue</span>
-            </label>
-            <input
-              type="radio"
-              name="color"
-              value="red"
-              id={`${formId}-red`}
-              className="color-radio"
-              checked={selectedColor === "red"}
-              onChange={() => setSelectedColor("red")}
-            />
-            <label htmlFor={`${formId}-red`}>
-              <span className="sr-only">Red</span>
-            </label>
-            <input
-              type="radio"
-              name="color"
-              value="green"
-              id={`${formId}-green`}
-              className="color-radio"
-              checked={selectedColor === "green"}
-              onChange={() => setSelectedColor("green")}
-            />
-            <label htmlFor={`${formId}-green`}>
-              <span className="sr-only">Green</span>
-            </label>
+            {EVENT_COLORS.map((color) => (
+              <Fragment key={color}>
+                <input
+                  type="radio"
+                  name="color"
+                  value={color}
+                  id={`${formId}-${color}`}
+                  checked={selectedColor === color}
+                  onChange={() => setSelectedColor(color)}
+                  className="color-radio"
+                />
+                <label htmlFor={`${formId}-${color}`}>
+                  <span className="sr-only">{color}</span>
+                </label>
+              </Fragment>
+            ))}
           </div>
         </div>
         <div className="row">

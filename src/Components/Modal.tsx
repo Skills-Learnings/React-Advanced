@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import { createPortal } from "react-dom"
 
 type ModalProps = {
@@ -7,6 +8,18 @@ type ModalProps = {
 }
 
 export default function Modal({ children, isOpen, onClose }: ModalProps) {
+  useEffect(() => {
+    function handler(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose()
+    }
+
+    document.addEventListener("keydown", handler)
+
+    return () => {
+      document.removeEventListener("keydown", handler)
+    }
+  }, [onClose])
+
   if (!isOpen) return null
 
   return createPortal(
@@ -14,6 +27,6 @@ export default function Modal({ children, isOpen, onClose }: ModalProps) {
       <div className="overlay" onClick={onClose}></div>
       <div className="modal-body">{children}</div>
     </div>,
-    document.querySelector("#modal-container")
+    document.querySelector("#modal-container") as HTMLElement
   )
 }

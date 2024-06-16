@@ -1,18 +1,28 @@
-import { ReactNode, createContext, useState } from "react"
+import { ReactNode, createContext, useEffect, useState } from "react"
+import { EVENT_COLORS } from "./useEvents"
+import { UnionOmit } from "../utils/types"
 
 export type Event = {
   id: string
   name: string
-  allDay?: boolean
-  startTime?: string
-  endTime?: string
+  color: (typeof EVENT_COLORS)[number]
   date: Date
-  color: string
-}
+} & (
+  | {
+      allDay: false
+      startTime: string
+      endTime: string
+    }
+  | {
+      allDay: true
+      startTime?: never
+      endTime?: never
+    }
+)
 
 type EventsContextProps = {
   events: Event[]
-  addEvent: (event: Event) => void
+  addEvent: (event: UnionOmit<Event, "id">) => void
   editEvent: (id: string, eventDetails: Event) => void
   deleteEvent: (id: string) => void
 }
@@ -24,9 +34,21 @@ type EventProviderProps = {
 }
 
 export default function EventsProvider({ children }: EventProviderProps) {
-  const [events, setEvents] = useState<Event[]>([])
+  const [events, setEvents] = useState<Event[]>(() => {
+    const eventsJson = localStorage.getItem("EVENTS")
+    if (eventsJson == null) return []
 
-  function addEvent(eventData: Event) {
+    return (JSON.parse(eventsJson) as Event[]).map((event) => {
+      if (event.date instanceof Date) return event
+      return { ...event, date: new Date(event.date) }
+    })
+  })
+
+  useEffect(() => {
+    localStorage.setItem("EVENTS", JSON.stringify(events))
+  }, [events])
+
+  function addEvent(eventData: UnionOmit<Event, "id">) {
     setEvents((e) => [...e, { ...eventData, id: crypto.randomUUID() }])
   }
 
@@ -39,12 +61,13 @@ export default function EventsProvider({ children }: EventProviderProps) {
   }
 
   function deleteEvent(id: string) {
-    setEvents(e => e.filter(event => event.id !== id))
+    setEvents((e) => e.filter((event) => event.id !== id))
   }
 
-
   return (
-    <EventsContext.Provider value={{ events, addEvent, editEvent, deleteEvent }}>
+    <EventsContext.Provider
+      value={{ events, addEvent, editEvent, deleteEvent }}
+    >
       {children}
     </EventsContext.Provider>
   )

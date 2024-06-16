@@ -1,7 +1,10 @@
-import { useState } from "react"
-import { Event, EventsContext } from "../Context/Events"
+import { Fragment, useState } from "react"
+import { Event, EventsContext } from "../context/Events"
 import EventForm from "./EventForm"
-import { useEvents } from "../Context/useEvents"
+import { useEvents } from "../context/useEvents"
+import { cc } from "../utils/cc"
+import { formatDate } from "../utils/formatDate"
+import { parse } from "date-fns"
 
 type EventsListProps = {
   events: Event[]
@@ -15,22 +18,30 @@ export default function EventsList({ events }: EventsListProps) {
   return (
     <div className="events">
       {events.map((event) => (
-        <button
-          onClick={() => setIsEditFormOpen(true)}
-          key={event.id}
-          className={`event ${event.allDay ? "all-day-event" : ""} ${
-            event.color
-          }`}
-        >
-          {event.allDay ? (
-            <div className="event-name">{event.name}</div>
-          ) : (
-            <>
-              <div className={`color-dot ${event.color}`}></div>
-              <div className="event-time">{event.startTime}</div>
+        <Fragment key={event.id}>
+          <button
+            onClick={() => setIsEditFormOpen(true)}
+            key={event.id}
+            className={cc(
+              "event",
+              event.color,
+              event.allDay && "all-day-event"
+            )}
+          >
+            {event.allDay ? (
               <div className="event-name">{event.name}</div>
-            </>
-          )}
+            ) : (
+              <>
+                <div className={`color-dot ${event.color}`}></div>
+                <div className="event-time">
+                  {formatDate(parse(event.startTime, "HH:mm", event.date), {
+                    timeStyle: "short",
+                  })}
+                </div>
+                <div className="event-name">{event.name}</div>
+              </>
+            )}
+          </button>
           <EventForm
             event={event}
             day={event.date}
@@ -39,7 +50,7 @@ export default function EventsList({ events }: EventsListProps) {
             isOpen={isEditFormOpen}
             onClose={() => setIsEditFormOpen(false)}
           />
-        </button>
+        </Fragment>
       ))}
     </div>
   )

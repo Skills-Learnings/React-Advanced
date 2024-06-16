@@ -11,7 +11,8 @@ import {
 } from "date-fns"
 import { useMemo, useState } from "react"
 import CalendarDay from "./CalendarDay"
-import { useEvents } from "../Context/useEvents"
+import { useEvents } from "../context/useEvents"
+import { formatDate } from "../utils/formatDate"
 
 export default function Calendar() {
   // Set the default month to current ongoing month
@@ -58,7 +59,7 @@ export default function Calendar() {
             </button>
           </div>
           <span className="month-title">
-            {format(currentMonth, "MMMM yyy")}
+            {formatDate(currentMonth, { month: "long", year: "numeric" })}
           </span>
         </div>
         <div className="days">
