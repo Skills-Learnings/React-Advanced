@@ -1,5 +1,5 @@
-# Component testing project implementation
-This branch contains the component testing project [implementation](https://github.com/WebDevSimplified/React-Simplified-Advanced-Projects/tree/main/41-42-component-testing/before) of Testing section of [React Advanced](https://courses.webdevsimplified.com/view/courses/react-simplified-advanced/2055894-testing/6465889-41-component-testing-project-introduction) course.
+# Hook testing project implementation
+This branch contains the hook testing project [implementation](https://github.com/WebDevSimplified/React-Simplified-Advanced-Projects/tree/main/43-44-hook-testing/before) of Testing section of [React Advanced](https://courses.webdevsimplified.com/view/courses/react-simplified-advanced/2055894-testing/6465891-43-hook-testing-project-introduction) course.
 
 ## Local Setup Instructions
 1. To run this project implementation on your local download the files.
