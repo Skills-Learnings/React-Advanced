@@ -477,3 +477,170 @@ Vitest is a fast and lightweight testing framework for JavaScript, designed to b
 	-  By leveraging these features, you can write comprehensive and effective tests for your React applications using Vitest.
 
 ### 2.3 React Testing Library
+React Testing Library is a popular testing utility for testing React components. It encourages writing tests that simulate how users interact with the application, rather than focusing on implementation details. Here's an basic explanation of how the react testing library works:
+1. **`render`**
+	- The `render` function is used to render your React components into the DOM (or a virtual DOM provided by the library). It returns a set of utility functions to query and interact with the rendered component.-
+		```jsx
+		import { render, screen } from '@testing-library/react';
+		import App from './App';
+
+		it('renders App component', () => {
+		  render(<App />);
+		  // Test logic goes here
+		});
+		``` 
+2. **`screen` Methods**
+	- The `screen` object provides utility methods to query elements rendered by your component:
+	- For example **`screen.getByTestId`**: Queries an element by its `data-testid` attribute.
+		```jsx
+		it('renders button with testId', () => {
+		  render(<Button data-testid="submit-button" />);
+		  const buttonElement = screen.getByTestId('submit-button');
+		  expect(buttonElement).toBeInTheDocument();
+		});
+		```
+	- For more screen object methods visit to react-testing library documentation.
+3. **User Interaction Testing**
+	- RTL includes the `user-event` library for simulating user interactions:
+		```jsx
+		import userEvent from '@testing-library/user-event';
+
+		it('clicking button', () => {
+		  render(<Button />);
+		  const button = screen.getByRole('button');
+		  userEvent.click(button);
+		  expect(/* Assertion */);
+		});
+		```
+4. **Hooks Testing**
+	- To test hooks, RTL provides `renderHook` and `act`:- 
+	- **`renderHook`**: Renders a hook inside a function component.
+		```jsx
+		import { renderHook, act } from '@testing-library/react-hooks';
+		import useCounter from './useCounter';
+
+		it('useCounter hook', () => {
+		  const { result } = renderHook(() => useCounter());
+		  expect(result.current.count).toBe(0);
+		  
+		  act(() => {
+		    result.current.increment();
+		  });
+		  
+		  expect(result.current.count).toBe(1);
+		});
+		```
+	- **`act`**: Wraps code that interacts with the hook to ensure state updates correctly.
+		```jsx
+		act(() => {
+		  // Interaction that updates state
+		});
+		```
+5. **`vi.fn()` for Callbacks Passed as Props**
+	- React Testing Library itself doesn't have `vi.fn()`. Instead, for testing callback functions passed as props, you can mock them using Jest's `jest.fn()`
+		```jsx
+		import { render, screen } from '@testing-library/react';
+		import Button from './Button';
+
+		it('onClick callback', () => {
+		  const onClickMock = jest.fn();
+		  render(<Button onClick={onClickMock} />);
+		  
+		  const buttonElement = screen.getByRole('button');
+		  userEvent.click(buttonElement);
+		  
+		  expect(onClickMock).toHaveBeenCalled();
+		});
+		```
+6. **Summary**
+React Testing Library (RTL) provides a robust set of utilities for testing React components in a user-centric way. It emphasizes testing components as users would interact with them, ensuring your tests are resilient to implementation changes. With utilities like `render`, `screen` methods (`getByTestId`, etc.), `user-event` library, and hooks testing (`renderHook`, `act`), RTL enables comprehensive and effective testing of React applications.
+### 2.4 Mocking API calls
+Mock Service Worker (MSW) is a powerful library for mocking API calls in testing environments. It intercepts network requests and provides mocked responses, making it ideal for testing components that depend on external data. Here's a detailed explanation of how to set up and use MSW for testing API calls with React Testing Library.
+
+1. **Step 1: Install MSW**
+	- First, install MSW: `npm install msw --save-dev` 
+
+2. **Step 2: Setup Mock Server**
+	- In your `src/test-setup/mockServer.js` file, you set up the mock server:
+		```js
+		import { setupServer } from "msw/node"
+
+		export const mockServer = setupServer()` 
+		```
+3. **Step 3: Configure Jest/Vitest**
+	- In your `src/test-setup/setupTests.js` file, configure the mock server to start before all tests and clean up after each test:
+		```js
+		import * as matchers from "@testing-library/jest-dom/matchers"
+		import { expect, afterEach, beforeAll, afterAll } from "vitest"
+		import { cleanup } from "@testing-library/react"
+		import { mockServer } from "./mockServer"
+
+		expect.extend(matchers)
+
+		beforeAll(() => {
+		  mockServer.listen({ onUnhandledRequest: "error" })
+		})
+
+		afterEach(() => {
+		  cleanup()
+		  mockServer.resetHandlers()
+		})
+
+		afterAll(() => {
+		  mockServer.close()
+		})
+		``` 
+
+4. **Define the Mock Response**
+In your test file, you define the mock response for the API endpoint and verify the component's behavior:
+In your `PostList` test file:
+```jsx
+import { render, screen } from "@testing-library/react"
+import { describe, expect, it } from "vitest"
+import PostList from "./PostList"
+import { mockServer } from "./test-setup/mockServer"
+import { HttpResponse, http } from "msw"
+
+describe("PostList component", () => {
+  it("should get list of posts", async () => {
+    // Define the mock response
+    mockServer.use(
+      http.get("http://example.com/api/posts", () => {
+        return HttpResponse.json([
+          { id: 1, title: "post 1" },
+          { id: 2, title: "post 2" },
+        ])
+      })
+    )
+
+    // Render the component
+    render(<PostList />)
+
+    // Verify the mock data is displayed
+    expect(await screen.findByText("post 1")).toBeInTheDocument()
+    expect(await screen.findByText("post 2")).toBeInTheDocument()
+    screen.debug()
+  })
+})
+``` 
+
+#### Explanation
+
+1.  **Mock Server Initialization**:
+    -   `setupServer` from `msw/node` initializes the mock server.
+    -   `mockServer.listen({ onUnhandledRequest: "error" })` starts the server before all tests.
+    -   `mockServer.resetHandlers()` resets the handlers after each test to avoid interference between tests.
+    -   `mockServer.close()` stops the server after all tests.
+
+2.  **Mock Response Setup**:
+    -   `mockServer.use` defines the mock response for a specific API call.
+    -   `http.get` specifies the HTTP method and endpoint to intercept.
+    -   `HttpResponse.json` returns the mock JSON response.
+
+3.  **Render and Verify**:
+    -   `render(<PostList />)` renders the component.
+    -   `screen.findByText("post 1")` waits for the element containing "post 1" to appear in the document.
+    -   `expect(...).toBeInTheDocument()` asserts that the expected elements are present in the DOM.
+
+### Summary
+MSW provides a seamless way to mock API calls, allowing you to test components that depend on external data without making real network requests. This setup ensures your tests are isolated, reliable, and faster. By following these steps, you can effectively use MSW in your React applications to test components that interact with APIs.
