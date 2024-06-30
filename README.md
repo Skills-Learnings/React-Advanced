@@ -1,12 +1,30 @@
-# React Advanced
-This repo contains the exercises and projects implementation from the [react simplified advanced course](https://courses.webdevsimplified.com/view/courses/react-simplified-advanced)
+# Clean and Asynchronous React
 
-## Branch Structure
-1. The main branch contains the skeleton code of vite react app.
-2. For each section of course there are separate branches for exercises and projects implementation
-
-## Local Setup Instructions
-1. To run this project implementation on your local download the files.
-2. Open the terminal and navigate to the root folder of project.
-3. Execute the command `npm install` and after that execute `npm run dev` command.
-4. Open the localhost url returned in the browser to view the project.
+## Topics covered in this section of course
+1. Clean Code
+    - As Prop
+    - Context Organization
+    - Use less useEffect
+    - Controlled vs Uncontrolled Inputs
+    - Compound Components
+    - React Folder Structure
+2.  Asynchronous React
+    - Suspense
+    - React Lazy
+    - useDeffered Value
+    - useTransition
+    - use Hook
+    - Async React Router
+## Learnings
+### 1.1 As Prop
+### 1.2 Context Organization
+### 1.3 Use less useEffect
+### 1.4 Controlled vs Uncontrolled Inputs
+### 1.5 Compount Components
+### 1.6 React Folder Structure
+### 2.1 Suspense
+### 2.2 React Lazy
+### 2.3 useDeffered Value
+### 2.4 useTransition
+### 2.5 use Hook
+### 2.6 Async React Router
