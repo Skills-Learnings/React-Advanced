@@ -6,4 +6,3 @@ This branch contains the hook testing project [implementation](https://github.co
 2. Open the terminal and navigate to the root folder of project.
 3. Execute the command `npm install` and after that execute `npm run dev` command.
 4. Open the localhost url returned in the browser and verify that project is running.
-5. To run the test execute `npm run test` comment and verify that tests are working.
