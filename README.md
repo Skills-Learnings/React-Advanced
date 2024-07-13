@@ -1,12 +1,18 @@
-# React Advanced
-This repo contains the exercises and projects implementation from the [react simplified advanced course](https://courses.webdevsimplified.com/view/courses/react-simplified-advanced)
+# Clean and Asynchronous React
 
-## Branch Structure
-1. The main branch contains the skeleton code of vite react app.
-2. For each section of course there are separate branches for exercises and projects implementation
+## Topics covered in this section of course
+2. Asynchronous React
+    - Suspense
+    - React Lazy
+    - useDeffered Value
+    - useTransition
+    - use Hook
+    - Async React Router
 
-## Local Setup Instructions
-1. To run this project implementation on your local download the files.
-2. Open the terminal and navigate to the root folder of project.
-3. Execute the command `npm install` and after that execute `npm run dev` command.
-4. Open the localhost url returned in the browser to view the project.
+## Learnings
+### 2.1 Suspense
+### 2.2 React Lazy
+### 2.3 useDeffered Value
+### 2.4 useTransition
+### 2.5 use Hook
+### 2.6 Async React Router
