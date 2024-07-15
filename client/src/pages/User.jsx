@@ -5,6 +5,7 @@ import { getUser } from "../api/users"
 import { PostCard, PostCardSkeleton } from "../components/PostCard"
 import { TodoItem } from "../components/TodoItem"
 import { Suspense } from "react"
+import { Skeleton, SkeletonList } from "../components/Skeleton"
 
 function User() {
   const { userPromise, postsPromise, todosPromise } = useLoaderData()
@@ -34,7 +35,13 @@ function User() {
 
       <h3 className="mt-4 mb-2">Posts</h3>
       <div className="card-grid">
-        <Suspense fallback={<PostListFallback />}>
+        <Suspense
+          fallback={
+            <SkeletonList count={3}>
+              <PostCardSkeleton />
+            </SkeletonList>
+          }
+        >
           <Await resolve={postsPromise}>
             {(posts) =>
               posts.map((post) => <PostCard key={post.id} {...post} />)
@@ -44,7 +51,15 @@ function User() {
       </div>
       <h3 className="mt-4 mb-2">Todos</h3>
       <ul>
-        <Suspense fallback={<TodosFallback />}>
+        <Suspense
+          fallback={
+            <SkeletonList count={10}>
+              <li>
+                <Skeleton short />
+              </li>
+            </SkeletonList>
+          }
+        >
           <Await resolve={todosPromise}>
             {(todos) =>
               todos.map((todo) => <TodoItem key={todo.id} {...todo} />)
@@ -59,53 +74,19 @@ function User() {
 function UserFallback() {
   return (
     <>
-      <div className="skeleton" style={{ width: "15em" }}></div>
+      <Skeleton short />
       <div className="page-subtitle">
-        <div className="skeleton" style={{ width: "15em" }}></div>
+        <Skeleton short />
       </div>
       <div>
-        <b>Company:</b>{" "}
-        <div
-          className="skeleton"
-          style={{ width: "15em", display: "inline-block" }}
-        ></div>
+        <b>Company:</b> <Skeleton short inline />
       </div>
       <div>
-        <b>Website:</b>{" "}
-        <div
-          className="skeleton"
-          style={{ width: "15em", display: "inline-block" }}
-        ></div>
+        <b>Website:</b> <Skeleton short inline />
       </div>
       <div>
-        <b>Address:</b>{" "}
-        <div
-          className="skeleton"
-          style={{ width: "15em", display: "inline-block" }}
-        ></div>
+        <b>Address:</b> <Skeleton short inline />
       </div>
-    </>
-  )
-}
-
-function TodosFallback() {
-  return (
-    <>
-      {Array.from({ length: 5 }).map((_, i) => (
-        <li key={i}>
-          <div className="skeleton" style={{ width: "15em" }}></div>
-        </li>
-      ))}
-    </>
-  )
-}
-
-function PostListFallback() {
-  return (
-    <>
-      {Array.from({ length: 3 }).map((_, i) => (
-        <PostCardSkeleton key={i} />
-      ))}
     </>
   )
 }

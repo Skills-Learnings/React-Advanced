@@ -1,6 +1,7 @@
 import { Await, defer, Link, useLoaderData } from "react-router-dom"
 import { getUsers } from "../api/users"
 import { Suspense } from "react"
+import { Skeleton, SkeletonButton, SkeletonList } from "../components/Skeleton"
 
 function UserList() {
   const { usersPromise } = useLoaderData()
@@ -9,7 +10,25 @@ function UserList() {
     <>
       <h1 className="page-title">Users</h1>
       <div className="card-grid">
-        <Suspense fallback={<UsersFallback />}>
+        <Suspense
+          fallback={
+            <SkeletonList count={6}>
+              <div className="card">
+                <div className="card-header">
+                  <Skeleton short />
+                </div>
+                <div className="card-body">
+                  <Skeleton short />
+                  <Skeleton short />
+                  <Skeleton short />
+                </div>
+                <div className="card-footer">
+                  <SkeletonButton />
+                </div>
+              </div>
+            </SkeletonList>
+          }
+        >
           <Await resolve={usersPromise}>
             {(users) =>
               users.map((user) => (
@@ -31,28 +50,6 @@ function UserList() {
           </Await>
         </Suspense>
       </div>
-    </>
-  )
-}
-
-function UsersFallback() {
-  return (
-    <>
-      {Array.from({ length: 6 }).map((_, i) => (
-        <div key={i} className="card">
-          <div className="card-header">
-            <div className="skeleton" style={{ width: "15em" }}></div>
-          </div>
-          <div className="card-body">
-            <div className="skeleton" style={{ width: "15em" }}></div>
-            <div className="skeleton" style={{ width: "15em" }}></div>
-            <div className="skeleton" style={{ width: "15em" }}></div>
-          </div>
-          <div className="card-footer">
-            <div className="skeleton skeleton-btn"></div>
-          </div>
-        </div>
-      ))}
     </>
   )
 }

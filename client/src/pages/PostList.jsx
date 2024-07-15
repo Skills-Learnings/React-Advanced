@@ -1,9 +1,17 @@
 import { Suspense, useEffect, useRef } from "react"
-import { Await, defer, Form, Link, useLoaderData, useNavigation } from "react-router-dom"
+import {
+  Await,
+  defer,
+  Form,
+  Link,
+  useLoaderData,
+  useNavigation,
+} from "react-router-dom"
 import { getPosts } from "../api/posts"
 import { getUsers } from "../api/users"
 import { FormGroup } from "../components/FormGroup"
 import { PostCard, PostCardSkeleton } from "../components/PostCard"
+import { SkeletonList } from "../components/Skeleton"
 
 function PostList() {
   const {
@@ -70,7 +78,13 @@ function PostList() {
 
       {isLoading && <div className="mb-2">Loading...</div>}
       <div className="card-grid">
-        <Suspense fallback={<PostListFallback />}>
+        <Suspense
+          fallback={
+            <SkeletonList count={6}>
+              <PostCardSkeleton />
+            </SkeletonList>
+          }
+        >
           <Await resolve={postsPromise}>
             {(posts) =>
               posts.map((post) => <PostCard key={post.id} {...post} />)
@@ -78,16 +92,6 @@ function PostList() {
           </Await>
         </Suspense>
       </div>
-    </>
-  )
-}
-
-function PostListFallback() {
-  return (
-    <>
-      {Array.from({ length: 6 }).map((_, i) => (
-        <PostCardSkeleton key={i} />
-      ))}
     </>
   )
 }

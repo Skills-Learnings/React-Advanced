@@ -2,6 +2,7 @@ import { Await, defer, useLoaderData } from "react-router-dom"
 import { getTodos } from "../api/todos"
 import { TodoItem } from "../components/TodoItem"
 import { Suspense } from "react"
+import { Skeleton, SkeletonList } from "../components/Skeleton"
 
 function TodoList() {
   const { todosPromise } = useLoaderData()
@@ -10,7 +11,15 @@ function TodoList() {
     <>
       <h1 className="page-title">Todos</h1>
       <ul>
-        <Suspense fallback={<TodosFallback />}>
+        <Suspense
+          fallback={
+            <SkeletonList count={10}>
+              <li>
+                <Skeleton short />
+              </li>
+            </SkeletonList>
+          }
+        >
           <Await resolve={todosPromise}>
             {(todos) =>
               todos.map((todo) => <TodoItem key={todo.id} {...todo} />)
@@ -18,18 +27,6 @@ function TodoList() {
           </Await>
         </Suspense>
       </ul>
-    </>
-  )
-}
-
-function TodosFallback() {
-  return (
-    <>
-      {Array.from({ length: 10 }).map((_, i) => (
-        <li key={i}>
-          <div className="skeleton" style={{ width: "15em" }}></div>
-        </li>
-      ))}
     </>
   )
 }

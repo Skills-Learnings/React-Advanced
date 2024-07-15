@@ -3,6 +3,7 @@ import { getComments } from "../api/comments"
 import { getPost } from "../api/posts"
 import { getUser } from "../api/users"
 import { Suspense } from "react"
+import { Skeleton, SkeletonList } from "../components/Skeleton"
 
 function Post() {
   const { commentsPromise, postPromise, userPromise } = useLoaderData()
@@ -10,9 +11,7 @@ function Post() {
   return (
     <>
       <h1 className="page-title">
-        <Suspense
-          fallback={<div className="skeleton" style={{ width: "15em" }}></div>}
-        >
+        <Suspense fallback={<Skeleton short />}>
           <Await resolve={postPromise}>{(post) => post.title}</Await>
         </Suspense>
         <div className="title-btns">
@@ -22,15 +21,8 @@ function Post() {
         </div>
       </h1>
       <span className="page-subtitle">
-        By: {" "}
-        <Suspense
-          fallback={
-            <div
-              className="skeleton"
-              style={{ width: "15em", display: "inline-block" }}
-            ></div>
-          }
-        >
+        By:{" "}
+        <Suspense fallback={<Skeleton short inline />}>
           <Await resolve={userPromise}>
             {(user) => <Link to={`/users/${user.id}`}>{user.name}</Link>}
           </Await>
@@ -40,9 +32,9 @@ function Post() {
         <Suspense
           fallback={
             <>
-              <div className="skeleton"></div>
-              <div className="skeleton"></div>
-              <div className="skeleton"></div>
+              <Skeleton />
+              <Skeleton />
+              <Skeleton />
             </>
           }
         >
@@ -52,7 +44,21 @@ function Post() {
       <h3 className="mt-4 mb-2">Comments</h3>
       {
         <div className="card-stack">
-          <Suspense fallback={<CommentsFallback />}>
+          <Suspense
+            fallback={
+              <SkeletonList count={6}>
+                <div className="card">
+                  <div className="card-body">
+                    <div className="text-sm mb-1">
+                      <Skeleton short />
+                    </div>
+                    <Skeleton />
+                    <Skeleton />
+                  </div>
+                </div>
+              </SkeletonList>
+            }
+          >
             <Await resolve={commentsPromise}>
               {(comments) =>
                 comments.map((comment) => (
@@ -73,23 +79,6 @@ function Post() {
   )
 }
 
-function CommentsFallback() {
-  return (
-    <>
-      {Array.from({ length: 5 }).map((_, i) => (
-        <div key={i} className="card">
-          <div className="card-body">
-            <div className="text-sm mb-1">
-              <div className="skeleton" style={{ width: "15em" }}></div>
-            </div>
-            <div className="skeleton"></div>
-            <div className="skeleton"></div>
-          </div>
-        </div>
-      ))}
-    </>
-  )
-}
 async function loader({ request: { signal }, params: { postId } }) {
   const comments = getComments(postId, { signal })
   const post = getPost(postId, { signal })
@@ -97,7 +86,7 @@ async function loader({ request: { signal }, params: { postId } }) {
   return defer({
     commentsPromise: comments,
     postPromise: post,
-    userPromise: post.then(post => getUser(post.userId, { signal })),
+    userPromise: post.then((post) => getUser(post.userId, { signal })),
   })
 }
 

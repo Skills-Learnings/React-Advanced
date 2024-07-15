@@ -1,6 +1,7 @@
 import { Await, Form, Link } from "react-router-dom"
 import { FormGroup } from "./FormGroup"
 import { Suspense } from "react"
+import { SkeletonInput } from "./Skeleton"
 
 const DEFAULT_VALUE_PROMISE = Promise.resolve({})
 
@@ -15,7 +16,7 @@ export function PostForm({
       <div className="form-row">
         <FormGroup errorMessage={errors.title}>
           <label htmlFor="title">Title</label>
-          <Suspense fallback={<div className="skeleton skeleton-input"></div>}>
+          <Suspense fallback={<SkeletonInput />}>
             <Await resolve={defaultValuesPromise}>
               {(defaultValues) => (
                 <input
@@ -30,7 +31,7 @@ export function PostForm({
         </FormGroup>
         <FormGroup errorMessage={errors.userId}>
           <label htmlFor="userId">Author</label>
-          <Suspense fallback={<div className="skeleton skeleton-input"></div>}>
+          <Suspense fallback={<SkeletonInput />}>
             <Await resolve={defaultValuesPromise}>
               {(defaultValues) => (
                 <Suspense
@@ -65,7 +66,7 @@ export function PostForm({
       <div className="form-row">
         <FormGroup errorMessage={errors.body}>
           <label htmlFor="body">Body</label>
-          <Suspense fallback={<div className="skeleton skeleton-input"></div>}>
+          <Suspense fallback={<SkeletonInput />}>
             <Await resolve={defaultValuesPromise}>
               {(defaultValues) => (
                 <textarea
