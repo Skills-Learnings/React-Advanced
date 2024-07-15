@@ -1,5 +1,5 @@
 
-# Clean and Asynchronous React
+# Asynchronous React
 
 ## Topics covered in this section of course
 
