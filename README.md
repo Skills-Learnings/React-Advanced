@@ -1,6 +1,6 @@
 
 
-# Clean and Asynchronous React
+# Clean React
 
 ## Topics covered in this section of course
 1. Clean Code
