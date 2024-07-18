@@ -5,7 +5,8 @@ type ThemeContext = "light" | "dark" | "system"
 
 type Context = {
   theme: ThemeContext
-  updateTheme: (theme: ThemeContext) => void
+  setTheme: (theme: ThemeContext) => void
+  isDark: boolean
 }
 
 export const Context = createContext<Context | null>(null)
@@ -15,20 +16,23 @@ type ThemeProviderProps = {
 }
 
 export default function ThemeProvider({ children }: ThemeProviderProps) {
-  const [theme, setTheme] = useLocalStorage<ThemeContext>("theme", "light")
+  const [theme, setTheme] = useLocalStorage<ThemeContext>("theme", "system")
 
   function updateTheme(theme: ThemeContext) {
-    let appTheme = theme
-    if (theme === "system") {
-      appTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light"
-    }
-    document.documentElement.classList.toggle("dark", appTheme === "dark")
+    const isDark =
+      theme === "dark" ||
+      (theme == "system" && matchMedia("(prefers-color-scheme: dark)").matches)
+    document.documentElement.classList.toggle("dark", isDark)
     setTheme(theme)
   }
   return (
-    <Context.Provider value={{ theme, updateTheme }}>
+    <Context.Provider
+      value={{
+        theme,
+        setTheme: updateTheme,
+        isDark: document.documentElement.classList.contains("dark"),
+      }}
+    >
       {children}
     </Context.Provider>
   )
