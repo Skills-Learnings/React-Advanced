@@ -4,6 +4,9 @@ import { ErrorPage } from "@/pages/ErrorPage"
 import { TaskListPage } from "@/pages/tasks/TaskListPage"
 import { NewTaskPage } from "@/pages/tasks/NewTaskPage"
 import { NotFoundPage } from "@/pages/NotFoundPage"
+import AuthLayout from "./features/auth/layouts/AuthLayout"
+import LoginForm from "./features/auth/components/LoginForm"
+import SignupForm from "./features/auth/components/SignUpForm"
 
 export const routes: RouteObject[] = [
   {
@@ -22,6 +25,13 @@ export const routes: RouteObject[] = [
             children: [
               { index: true, element: <TaskListPage /> },
               { path: "new", element: <NewTaskPage /> },
+            ],
+          },
+          {
+            element: <AuthLayout />,
+            children: [
+              { path: "login", element: <LoginForm /> },
+              { path: "signup", element: <SignupForm /> },
             ],
           },
           { path: "*", element: <NotFoundPage /> },

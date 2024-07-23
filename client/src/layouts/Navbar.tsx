@@ -2,15 +2,18 @@ import { Button } from "@/components/ui/button"
 import {
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useAuth } from "@/features/auth/hooks/useAuth"
 import { useTheme } from "@/hooks/useTheme"
 import { DropdownMenu, DropdownMenuPortal } from "@radix-ui/react-dropdown-menu"
-import { Menu, Sun } from "lucide-react"
+import { ChevronDown, Menu, Sun } from "lucide-react"
 import { Moon } from "lucide-react"
 import { Link } from "react-router-dom"
 
 export default function Navbar() {
+  const { user, logOut } = useAuth()
   return (
     <>
       <nav className="sticky top-0 z-10 border-b p-4 bg-white dark:bg-slate-950">
@@ -20,6 +23,29 @@ export default function Navbar() {
             <ThemeButton />
             <div className="hidden sm:flex">
               <NavItem to="/tasks" label="Task Board" />
+              {user != undefined ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost">
+                      <span>{user.email}</span>
+                      <ChevronDown className="w-4 h-4 ml-2" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuPortal>
+                    <DropdownMenuContent>
+                      <DropdownMenuItem asChild>
+                        <Link to="/">Listings</Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={logOut}>
+                        Logout
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenuPortal>
+                </DropdownMenu>
+              ) : (
+                <NavItem to="/login" label="Login" />
+              )}
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild className="flex sm:hidden">
