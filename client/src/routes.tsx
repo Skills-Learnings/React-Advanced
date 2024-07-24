@@ -4,9 +4,7 @@ import { ErrorPage } from "@/pages/ErrorPage"
 import { TaskListPage } from "@/pages/tasks/TaskListPage"
 import { NewTaskPage } from "@/pages/tasks/NewTaskPage"
 import { NotFoundPage } from "@/pages/NotFoundPage"
-import AuthLayout from "./features/auth/layouts/AuthLayout"
-import LoginForm from "./features/auth/components/LoginForm"
-import SignupForm from "./features/auth/components/SignUpForm"
+import { AuthLayout, LoginForm, SignupForm } from "@/features/auth"
 
 export const routes: RouteObject[] = [
   {

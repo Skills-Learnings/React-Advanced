@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
+  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -24,6 +25,8 @@ import { useAuth } from "../hooks/useAuth"
 import { AxiosError } from "axios"
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner"
 
+type SignupValues = z.infer<typeof formSchema>
+
 const formSchema = signupSchema
   .merge(z.object({ confirmPassword: z.string() }))
   .refine((data) => data.password === data.confirmPassword, {
@@ -31,20 +34,14 @@ const formSchema = signupSchema
     path: ["confirmPassword"],
   })
 
-type FormValues = {
-  email: string
-  password: string
-  confirmPassword: string
-}
-
-export default function SignupForm() {
+export function SignupForm() {
   const { signUp } = useAuth()
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: { email: "", password: "", confirmPassword: "" },
   })
 
-  async function onSubmit(values: FormValues) {
+  async function onSubmit(values: SignupValues) {
     await signUp(values.email, values.password).catch((error) => {
       if (
         error instanceof AxiosError &&
@@ -61,6 +58,11 @@ export default function SignupForm() {
         <Card className="w-[400px]">
           <CardHeader>
             <CardTitle>Sign Up</CardTitle>
+            {form.formState.errors.root?.message && (
+              <CardDescription className="test-red-500 dark:text-red-900">
+                {form.formState.errors.root.message}
+              </CardDescription>
+            )}
           </CardHeader>
           <CardContent className="flex flex-col w-full gap-4">
             <FormField
@@ -110,7 +112,11 @@ export default function SignupForm() {
             <Button variant="outline" asChild>
               <Link to="/login">Login</Link>
             </Button>
-            <Button type="submit" variant="default">
+            <Button
+              type="submit"
+              variant="default"
+              disabled={form.formState.isSubmitting}
+            >
               {form.formState.isSubmitting ? <LoadingSpinner /> : "Sign Up"}
             </Button>
           </CardFooter>

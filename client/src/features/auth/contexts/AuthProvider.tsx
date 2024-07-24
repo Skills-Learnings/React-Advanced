@@ -12,10 +12,12 @@ import LogoutModal from "../components/LogoutModal"
 type Context = {
   signUp: (email: string, password: string) => Promise<void>
   logIn: (email: string, password: string) => Promise<void>
-  logOut: () => void
+  logOut: () =>  Promise<void>
   isLoggedIn: boolean
+  isLoadingUser: boolean
   user: User | undefined
 }
+
 export const Context = createContext<Context | null>(null)
 
 type AuthProviderProps = {
@@ -25,11 +27,15 @@ type AuthProviderProps = {
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User>()
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false)
+  const [isLoadingUser, setIsLoadingUser] = useState(true)
   const navigate = useNavigate()
   const location = useLocation()
 
   useEffect(() => {
-    getCurrentUser().then(setUser)
+    setIsLoadingUser(true)
+    getCurrentUser().then(setUser).finally(() => {
+      setIsLoadingUser(false)
+    })
   }, [])
 
   function signUp(email: string, password: string) {
@@ -55,7 +61,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   return (
     <Context.Provider
-      value={{ signUp, logIn, logOut, user, isLoggedIn: user != null }}
+      value={{ signUp, logIn, logOut, user, isLoadingUser, isLoggedIn: user != null }}
     >
       {children}
       <LogoutModal

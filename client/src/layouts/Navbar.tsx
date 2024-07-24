@@ -3,13 +3,15 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useAuth } from "@/features/auth/hooks/useAuth"
+import { useAuth } from "@/features/auth"
 import { useTheme } from "@/hooks/useTheme"
 import { DropdownMenu, DropdownMenuPortal } from "@radix-ui/react-dropdown-menu"
-import { ChevronDown, Menu, Sun } from "lucide-react"
-import { Moon } from "lucide-react"
+import { ChevronDown, Menu, Sun, Moon } from "lucide-react"
 import { Link } from "react-router-dom"
 
 export default function Navbar() {
@@ -62,6 +64,29 @@ export default function Navbar() {
                   <DropdownMenuItem asChild>
                     <Link to="/tasks">Task Board</Link>
                   </DropdownMenuItem>
+                  {user != undefined ? (
+                    <DropdownMenuSub>
+                      <DropdownMenuSubTrigger asChild>
+                        <span className="mr-auto">{user.email}</span>
+                        <ChevronDown className="w-4 h-4 ml-2" />
+                      </DropdownMenuSubTrigger>
+                      <DropdownMenuPortal>
+                        <DropdownMenuSubContent>
+                          <DropdownMenuItem asChild>
+                            <Link to="/">Listings</Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={logOut}>
+                            Logout
+                          </DropdownMenuItem>
+                        </DropdownMenuSubContent>
+                      </DropdownMenuPortal>
+                    </DropdownMenuSub>
+                  ) : (
+                    <DropdownMenuItem asChild>
+                      <Link to="/login">Login</Link>
+                    </DropdownMenuItem>
+                  )}
                 </DropdownMenuContent>
               </DropdownMenuPortal>
             </DropdownMenu>

@@ -22,23 +22,19 @@ import { useAuth } from "../hooks/useAuth"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { AxiosError } from "axios"
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner"
+import { z } from "zod"
 
-const formSchema = loginSchema
+type LoginValues = z.infer<typeof loginSchema>
 
-type FormValues = {
-  email: string
-  password: string
-}
-
-export default function LoginForm({}) {
+export function LoginForm() {
   const { logIn } = useAuth()
 
   const form = useForm({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
   })
 
-  async function onSubmit(values: FormValues) {
+  async function onSubmit(values: LoginValues) {
     await logIn(values.email, values.password).catch((error) => {
       if (
         error instanceof AxiosError &&
