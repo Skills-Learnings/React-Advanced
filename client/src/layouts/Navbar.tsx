@@ -36,7 +36,7 @@ export default function Navbar() {
                   <DropdownMenuPortal>
                     <DropdownMenuContent>
                       <DropdownMenuItem asChild>
-                        <Link to="/">Listings</Link>
+                        <Link to="/jobs/my-listings">My Listings</Link>
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={logOut}>
@@ -73,7 +73,7 @@ export default function Navbar() {
                       <DropdownMenuPortal>
                         <DropdownMenuSubContent>
                           <DropdownMenuItem asChild>
-                            <Link to="/">Listings</Link>
+                            <Link to="/jobs/my-listings">My Listings</Link>
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem onClick={logOut}>

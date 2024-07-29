@@ -1,9 +1,4 @@
 import { z } from "zod"
-import {
-  TASK_CATEGORIES,
-  TASK_PRIORITIES,
-  TASK_STATUSES,
-} from "../constants/constants"
 import { Control, FieldValues, Path, PathValue, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
@@ -24,6 +19,7 @@ import {
   SelectGroup,
   SelectItem,
 } from "@/components/ui/select"
+import { TASK_CATEGORIES, TASK_PRIORITIES, TASK_STATUSES } from "../constants/constants"
 
 type TaskFormValues = z.infer<typeof formSchema>
 
