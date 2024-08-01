@@ -1,12 +1,12 @@
 import { PrivatePage } from "@/components/routing/PrivatePage"
 import { loader } from "./loader"
-import { MyListingsPage } from "./Page"
+import { EditListingPage } from "./Page"
 
-export const MyListingsRoute = {
+export const EditListingRoute = {
   loader,
   element: (
     <PrivatePage>
-      <MyListingsPage />
+      <EditListingPage />
     </PrivatePage>
   ),
 }

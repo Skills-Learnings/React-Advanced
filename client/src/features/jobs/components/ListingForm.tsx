@@ -27,6 +27,9 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { jobListingFormSchema } from "@backend/constants/schemas/jobListings"
 import { z } from "zod"
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner"
+import { useState } from "react"
+import { ListingCard } from "./ListingCard"
+import { ListingDetailsDialog } from "./ListingDetailsDialog"
 
 type ListingFormValues = z.infer<typeof jobListingFormSchema>
 
@@ -55,130 +58,148 @@ export function ListingForm({
     resolver: zodResolver(jobListingFormSchema),
     defaultValues: initialListing,
   })
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false)
+  const listingValues = form.watch()
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-          <FormField
-            control={form.control}
-            name="title"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Title</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="companyName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Company Name</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="location"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Location</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="applyUrl"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Application URL</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <ListingSelectFormField
-            control={form.control}
-            label="Type"
-            name="type"
-            options={JOB_LISTING_TYPES}
-          />
-          <ListingSelectFormField
-            control={form.control}
-            label="Experience Level"
-            name="experienceLevel"
-            options={JOB_LISTING_EXPERIENCE_LEVELS}
-          />
-          <FormField
-            control={form.control}
-            name="salary"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Salary</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    {...field}
-                    onChange={(e) => field.onChange(e.target.valueAsNumber)}
-                    value={isNaN(field.value) ? "" : field.value}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="shortDescription"
-            render={({ field }) => (
-              <FormItem className="sm:col-span-2">
-                <FormLabel>Short Description</FormLabel>
-                <FormControl>
-                  <Textarea {...field}></Textarea>
-                </FormControl>
-                <FormDescription>Max 200 characters</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem className="sm:col-span-full">
-                <FormLabel>Full Description</FormLabel>
-                <FormControl>
-                  <Textarea {...field}></Textarea>
-                </FormControl>
-                <FormDescription>Supports full Markdown</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
+    <>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Title</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="companyName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Company Name</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="location"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Location</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="applyUrl"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Application URL</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <ListingSelectFormField
+              control={form.control}
+              label="Type"
+              name="type"
+              options={JOB_LISTING_TYPES}
+            />
+            <ListingSelectFormField
+              control={form.control}
+              label="Experience Level"
+              name="experienceLevel"
+              options={JOB_LISTING_EXPERIENCE_LEVELS}
+            />
+            <FormField
+              control={form.control}
+              name="salary"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Salary</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      {...field}
+                      onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                      value={isNaN(field.value) ? "" : field.value}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="shortDescription"
+              render={({ field }) => (
+                <FormItem className="sm:col-span-2">
+                  <FormLabel>Short Description</FormLabel>
+                  <FormControl>
+                    <Textarea {...field}></Textarea>
+                  </FormControl>
+                  <FormDescription>Max 200 characters</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem className="sm:col-span-full">
+                  <FormLabel>Full Description</FormLabel>
+                  <FormControl>
+                    <Textarea {...field}/>
+                  </FormControl>
+                  <FormDescription>Supports full Markdown</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="flex gap-2 justify-end">
+            <Button
+              variant="outline"
+              type="button"
+              onClick={() => setIsPreviewOpen((e) => !e)}
+            >
+              Show Preview
+            </Button>
+            <Button type="submit" disabled={form.formState.isSubmitting}>
+              {form.formState.isSubmitting ? <LoadingSpinner /> : "Save"}
+            </Button>
+          </div>
+        </form>
+      </Form>
+      {isPreviewOpen && (
+        <div className="flex flex-col sm:grid gap-4 grid-cols-[repeat(auto-fill,minmax(400px,1fr))] mt-12">
+          <ListingCard
+            {...listingValues}
+            footerBtns={<ListingDetailsDialog {...listingValues} />}
           />
         </div>
-        <div className="flex gap-2 justify-end">
-          <Button variant="outline">Show Preview</Button>
-          <Button type="submit" disabled={form.formState.isSubmitting}>
-            {form.formState.isSubmitting ? <LoadingSpinner /> : "Save"}
-          </Button>
-        </div>
-      </form>
-    </Form>
+      )}
+    </>
   )
 }
 

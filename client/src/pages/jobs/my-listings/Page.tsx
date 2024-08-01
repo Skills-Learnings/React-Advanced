@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { PageHeader } from "@/components/ui/PageHeader"
-import { MyListingsGrid } from "@/features/jobs"
+import { ListingSkeletonGrid, MyListingsGrid } from "@/features/jobs"
 import { Suspense } from "react"
 import { Await, Link, useLoaderData } from "react-router-dom"
 
@@ -21,7 +21,7 @@ export function MyListingsPage() {
         My Job Listings
       </PageHeader>
       {
-        <Suspense fallback="loading">
+        <Suspense fallback={<ListingSkeletonGrid />}>
           <Await resolve={myListingsPromise}>
             {(myListings) => <MyListingsGrid listings={myListings} />}
           </Await>
