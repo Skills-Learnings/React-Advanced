@@ -1,11 +1,13 @@
 import { Button } from "@/components/ui/button"
 import { PageHeader } from "@/components/ui/PageHeader"
 import { ListingSkeletonGrid, MyListingsGrid } from "@/features/jobs"
+import { Await, useDeferredLoaderData } from "@/lib/reactRouter"
 import { Suspense } from "react"
-import { Await, Link, useLoaderData } from "react-router-dom"
+import { Link } from "react-router-dom"
+import { loader } from "./loader"
 
 export function MyListingsPage() {
-  const { myListingsPromise } = useLoaderData()
+  const { myListingsPromise } = useDeferredLoaderData<typeof loader>()
   console.log(myListingsPromise)
   return (
     <>

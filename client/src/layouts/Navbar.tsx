@@ -104,11 +104,9 @@ type NavItemProps = {
 
 function NavItem({ to, label }: NavItemProps) {
   return (
-    <div>
-      <Button variant="ghost">
-        <Link to={to}>{label}</Link>
-      </Button>
-    </div>
+    <Button variant="ghost">
+      <Link to={to}>{label}</Link>
+    </Button>
   )
 }
 

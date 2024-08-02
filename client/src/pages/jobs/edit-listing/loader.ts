@@ -1,8 +1,8 @@
 import { getJobListing } from "@/features/jobs"
-import { defer } from "react-router-dom"
+import { deferredLoader } from "@/lib/reactRouter"
 
-export function loader({ params: { id } }) {
+export const loader = deferredLoader(({ params: { id } }) => {
   if (typeof id !== "string") throw new Response("Not Found", { status: 404 })
 
-  return defer({ listingPromise: getJobListing(id), id })
-}
+  return { listingPromise: getJobListing(id), id }
+})

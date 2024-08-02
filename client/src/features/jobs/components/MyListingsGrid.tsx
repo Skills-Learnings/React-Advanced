@@ -14,20 +14,21 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { deleteListing as deleteListingService} from "../services/listings"
+import { deleteListing as deleteListingService } from "../services/listings"
 import { useMemo, useState } from "react"
 import { toast } from "@/components/ui/use-toast"
 import { ToastAction } from "@/components/ui/toast"
+import ListingGrid from "./ListingGrid"
 
 type MyListingsGridProps = {
   listings: JobListing[]
 }
 
 export function MyListingsGrid({ listings }: MyListingsGridProps) {
-  const [deletedListingID, setDeletedListingIds] = useState<string[]>([])
+  const [deletedListingIds, setDeletedListingIds] = useState<string[]>([])
   const visibleListings = useMemo(() => {
-    return listings.filter((listing) => !deletedListingID.includes(listing.id))
-  }, [listings, deletedListingID])
+    return listings.filter((listing) => !deletedListingIds.includes(listing.id))
+  }, [listings, deletedListingIds])
 
   function deleteListing(id: string) {
     deleteListingService(id).catch(() => {
@@ -50,7 +51,7 @@ export function MyListingsGrid({ listings }: MyListingsGridProps) {
   }
 
   return (
-    <div className="flex flex-col sm:grid gap-4 grid-cols-[repeat(auto-fill,minmax(400px,1fr))]">
+    <ListingGrid>
       {visibleListings.map((listing) => (
         <MyListingCard
           key={listing.id}
@@ -58,7 +59,7 @@ export function MyListingsGrid({ listings }: MyListingsGridProps) {
           deleteListing={deleteListing}
         />
       ))}
-    </div>
+    </ListingGrid>
   )
 }
 
@@ -85,7 +86,9 @@ function MyListingCard({ listing, deleteListing }: MyListingCardProps) {
         }
         footerBtns={
           <>
-            <DeleteJobListing deleteListing={() => deleteListing(listing.id)} />
+            <DeleteJobListingDialog
+              deleteListing={() => deleteListing(listing.id)}
+            />
             <Button variant="outline" asChild>
               <Link to={`/jobs/${listing.id}/edit`}>Edit</Link>
             </Button>
@@ -119,10 +122,12 @@ function getJobListingBadgeVariant(
   }
 }
 
-type DeleteJobListingProps = {
+type DeleteJobListingDialogProps = {
   deleteListing: () => void
 }
-function DeleteJobListing({ deleteListing }: DeleteJobListingProps) {
+function DeleteJobListingDialog({
+  deleteListing,
+}: DeleteJobListingDialogProps) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>

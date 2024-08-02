@@ -1,5 +1,5 @@
 import { useAuth } from "@/features/auth"
-import React, { ReactNode } from "react"
+import { ReactNode } from "react"
 import { Navigate, useLocation } from "react-router-dom"
 import { LoadingSpinner } from "../ui/LoadingSpinner"
 

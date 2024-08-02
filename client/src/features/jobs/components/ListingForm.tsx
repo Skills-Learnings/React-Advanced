@@ -30,6 +30,7 @@ import { LoadingSpinner } from "@/components/ui/LoadingSpinner"
 import { useState } from "react"
 import { ListingCard } from "./ListingCard"
 import { ListingDetailsDialog } from "./ListingDetailsDialog"
+import ListingGrid from "./ListingGrid"
 
 type ListingFormValues = z.infer<typeof jobListingFormSchema>
 
@@ -54,7 +55,7 @@ export function ListingForm({
   initialListing = DEFAULT_VALUES,
   onSubmit,
 }: ListingFormProps) {
-  const form = useForm({
+  const form = useForm<ListingFormValues>({
     resolver: zodResolver(jobListingFormSchema),
     defaultValues: initialListing,
   })
@@ -183,7 +184,7 @@ export function ListingForm({
               type="button"
               onClick={() => setIsPreviewOpen((e) => !e)}
             >
-              Show Preview
+              {isPreviewOpen ? "Close" : "Show"} Preview
             </Button>
             <Button type="submit" disabled={form.formState.isSubmitting}>
               {form.formState.isSubmitting ? <LoadingSpinner /> : "Save"}
@@ -192,12 +193,12 @@ export function ListingForm({
         </form>
       </Form>
       {isPreviewOpen && (
-        <div className="flex flex-col sm:grid gap-4 grid-cols-[repeat(auto-fill,minmax(400px,1fr))] mt-12">
+        <ListingGrid className="mt-12">
           <ListingCard
             {...listingValues}
             footerBtns={<ListingDetailsDialog {...listingValues} />}
           />
-        </div>
+        </ListingGrid>
       )}
     </>
   )

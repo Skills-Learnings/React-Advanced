@@ -1,7 +1,6 @@
 import { getUserListings } from "@/features/jobs"
-import { defer } from "react-router-dom"
+import { deferredLoader } from "@/lib/reactRouter"
 
-export function loader() {
-  const myListings = getUserListings()
-  return defer({ myListingsPromise: myListings })
-}
+export const loader = deferredLoader(() => {
+  return { myListingsPromise: getUserListings() }
+})
