@@ -14,11 +14,34 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { deleteListing as deleteListingService } from "../services/listings"
+import {
+  createPublishPaymentIntent,
+  deleteListing as deleteListingService,
+} from "../services/listings"
 import { useMemo, useState } from "react"
 import { toast } from "@/components/ui/use-toast"
 import { ToastAction } from "@/components/ui/toast"
 import ListingGrid from "./ListingGrid"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { JOB_LISTING_DURATIONS } from "@backend/constants/types"
+import { getJobListingPriceInCents } from "@backend/utils/getJobListingPriceInCents"
+import { formatCurrency } from "@/utils/formatters"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+} from "@/components/ui/dialog"
+import { DialogTitle } from "@radix-ui/react-dialog"
+import { Elements } from "@stripe/react-stripe-js"
+import { useTheme } from "@/hooks/useTheme"
+import { stripePromise } from "@/lib/stripe"
+import { ListingCheckoutForm } from "./ListingCheckoutForm"
+import { formatDistanceStrict, isAfter } from "date-fns"
 
 type MyListingsGridProps = {
   listings: JobListing[]
@@ -69,6 +92,10 @@ type MyListingCardProps = {
 }
 
 function MyListingCard({ listing, deleteListing }: MyListingCardProps) {
+  const [selectedDuration, setSelectedDuration] =
+    useState<(typeof JOB_LISTING_DURATIONS)[number]>()
+  const [clientSecret, setClientSecret] = useState<string>()
+  const { isDark } = useTheme()
   const status = getJobListingStatus(listing.expiresAt)
   return (
     <>
@@ -81,6 +108,9 @@ function MyListingCard({ listing, deleteListing }: MyListingCardProps) {
               variant={getJobListingBadgeVariant(status)}
             >
               {status}
+              {status === "Active" &&
+                listing.expiresAt != null &&
+                ` - ${getDaysRemainingText(listing.expiresAt)}`}
             </Badge>
           </div>
         }
@@ -92,6 +122,63 @@ function MyListingCard({ listing, deleteListing }: MyListingCardProps) {
             <Button variant="outline" asChild>
               <Link to={`/jobs/${listing.id}/edit`}>Edit</Link>
             </Button>
+            <Dialog
+              open={selectedDuration != null}
+              onOpenChange={(isOpen) => {
+                if (isOpen) return
+                setSelectedDuration(undefined)
+                setClientSecret(undefined)
+              }}
+            >
+              <DialogContent>
+                <DialogTitle>
+                  {getPublishButtonText(status)} {listing.title} for{" "}
+                  {selectedDuration} days
+                </DialogTitle>
+                <DialogDescription>
+                  This is a non-refundable purchase
+                </DialogDescription>
+                {clientSecret != null && selectedDuration != null && (
+                  <Elements
+                    options={{
+                      clientSecret,
+                      appearance: { theme: isDark ? "night" : "stripe" },
+                    }}
+                    stripe={stripePromise}
+                  >
+                    <ListingCheckoutForm
+                      amount={getJobListingPriceInCents(selectedDuration) / 100}
+                    />
+                  </Elements>
+                )}
+              </DialogContent>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="default">
+                    {getPublishButtonText(status)}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  {JOB_LISTING_DURATIONS.map((duration) => (
+                    <DropdownMenuItem
+                      key={duration}
+                      onClick={async () => {
+                        setSelectedDuration(duration)
+                        const { clientSecret } =
+                          await createPublishPaymentIntent(listing.id, duration)
+                        console.log(clientSecret)
+                        setClientSecret(clientSecret)
+                      }}
+                    >
+                      {duration} Days -{" "}
+                      {formatCurrency(
+                        getJobListingPriceInCents(duration) / 100
+                      )}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </Dialog>
           </>
         }
       />
@@ -119,6 +206,21 @@ function getJobListingBadgeVariant(
       return "default"
     case "Expired":
       return "destructive"
+  }
+}
+
+function getDaysRemainingText(expiresAt: Date) {
+  return `${formatDistanceStrict(expiresAt, new Date(), { unit: "day" })} left`
+}
+
+function getPublishButtonText(status: ReturnType<typeof getJobListingStatus>) {
+  switch (status) {
+    case "Draft":
+      return "Publish"
+    case "Active":
+      return "Extend"
+    case "Expired":
+      return "Republish"
   }
 }
 
