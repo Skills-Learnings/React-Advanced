@@ -30,7 +30,7 @@ import { LoadingSpinner } from "@/components/ui/LoadingSpinner"
 import { useState } from "react"
 import { ListingCard } from "./ListingCard"
 import { ListingDetailsDialog } from "./ListingDetailsDialog"
-import ListingGrid from "./ListingGrid"
+import { ListingGrid } from "./ListingGrid"
 
 type ListingFormValues = z.infer<typeof jobListingFormSchema>
 
@@ -170,7 +170,7 @@ export function ListingForm({
                 <FormItem className="sm:col-span-full">
                   <FormLabel>Full Description</FormLabel>
                   <FormControl>
-                    <Textarea {...field}/>
+                    <Textarea {...field} />
                   </FormControl>
                   <FormDescription>Supports full Markdown</FormDescription>
                   <FormMessage />

@@ -3,7 +3,7 @@ import { ComponentProps } from "react"
 
 type ListingGridProps = ComponentProps<"div">
 
-export default function ListingGrid({ className, ...props }: ListingGridProps) {
+export function ListingGrid({ className, ...props }: ListingGridProps) {
   return (
     <div
       {...props}

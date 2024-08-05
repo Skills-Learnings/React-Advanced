@@ -21,7 +21,7 @@ import {
 import { useMemo, useState } from "react"
 import { toast } from "@/components/ui/use-toast"
 import { ToastAction } from "@/components/ui/toast"
-import ListingGrid from "./ListingGrid"
+import { ListingGrid } from "./ListingGrid"
 import {
   DropdownMenu,
   DropdownMenuContent,
